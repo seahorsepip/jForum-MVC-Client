@@ -1,0 +1,83 @@
+﻿@using jForumClient.Models;
+
+@{
+    TopicModel topic = (TopicModel)Model;
+    ViewBag.Title = topic.Title;
+    Dictionary<int, PostModel> posts = (Dictionary<int, PostModel>)topic.Posts.Data;
+}
+
+<section class="topic">
+    <h2>@(topic.Title)</h2>
+    <h5>@topic.Posts.Count posts in this topic</h5>
+    <div class="pagination"></div>
+    <ul class="posts">
+        @if (ViewBag.Page == 1)
+        {
+            <li class="post_start">
+                <h3>@topic.User.Name</h3>
+                <time>Posted @topic.Date.ToString("MMMM dd, yyyy")</time>
+                <div>@Html.Nl2Br(topic.Content)</div>
+                <button class="button_quote"><i class="material-icons">&#xE145;</i>Quote</button>
+            </li>
+        }
+        @foreach (KeyValuePair<int, PostModel> post in posts)
+        {
+            <li data-id="@post.Key">
+                <h3>@post.Value.User.Name</h3>
+                <time>Posted @post.Value.Date.ToString("MMMM dd, yyyy")</time>
+                <div>@Html.Nl2Br(post.Value.Content)</div>
+                <button class="button_quote"><i class="material-icons">&#xE145;</i>Quote</button>
+            </li>
+        }
+    </ul>
+    <div class="pagination"></div>
+    <script src="/js/jquery.simplePagination.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        $(function() {
+            $(".pagination").pagination({
+                items: @topic.Posts.Count,
+                itemsOnPage: @ViewBag.Items,
+                currentPage: @ViewBag.Page,
+                displayedPages: 14,
+                edges: 0,
+                selectOnClick: false,
+                prevText: "<i class=\"material-icons\">&#xE408;</i>",
+                nextText: "<i class=\"material-icons\">&#xE409;</i>",
+                onPageClick: function(page, e) {
+                    e.preventDefault();
+                    $(".form_page").children("input").val(page).end()[0].submit();
+                }
+            });
+
+            $(".form_post").submit(function(e) {
+                var self = this;
+                e.preventDefault();
+                var content = $(this).children("textarea").val();
+                if(content.length >= 10) {
+                    $.ajax({
+                        url: api + "post",
+                        headers: {
+                            Token: user.token
+                        },
+                        type: "POST",
+                        data: {
+                            content: content,
+                            topicid: @topic.Id
+                        }
+                    }).done(function() {
+                        location.reload();
+                    });
+                } else {
+                    alert("Minimaal 10 tekens vereist.");
+                }
+            });
+        });
+    </script>
+    <form class="form_page">
+        <input type="hidden" name="page" value="@ViewBag.Page" />
+    </form>
+    <form class="form_post">
+        <textarea placeholder="Reply to topic.."></textarea>
+        <button><i class="material-icons">&#xE15E;</i>Reply</button>
+    </form>
+</section>

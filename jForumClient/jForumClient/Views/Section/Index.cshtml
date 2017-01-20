@@ -1,0 +1,40 @@
+﻿@using jForumClient.Models;
+
+@{
+    SectionModel section = (SectionModel)Model;
+    ViewBag.Title = section.Title;
+}
+
+<section>
+    <h2>@(section.Title)</h2>
+    <h5>@(section.Description)</h5>
+</section>
+
+<section class="sections">
+    <h3>Sections</h3>
+    <ul>
+        @foreach (KeyValuePair<int, SectionModel> childSection in section.Sections)
+        {
+            <li>
+                <a href="/section/@(childSection.Key)">
+                    <h4>@(childSection.Value.Title)</h4>
+                    <h5>@(childSection.Value.Description)</h5>
+                </a>
+            </li>
+        }
+    </ul>
+</section>
+
+<section class="topics">
+    <h3>Topics</h3>
+    <ul>
+        @foreach (KeyValuePair<int, TopicModel> topic in section.Topics)
+        {
+            <li>
+                <a href="/topic/@(topic.Key)">
+                    <h4>@(topic.Value.Title)</h4>
+                </a>
+            </li>
+        }
+    </ul>
+</section>

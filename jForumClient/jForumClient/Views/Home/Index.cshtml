@@ -1,0 +1,21 @@
+﻿@using jForumClient.Models;
+
+@{
+    ForumModel forum = (ForumModel)Model;
+    ViewBag.Title = forum.Name;
+}
+
+<section class="sections">
+    <h3>Sections</h3>
+    <ul>
+        @foreach (KeyValuePair<int, SectionModel> section in forum.Sections)
+        {
+            <li>
+                <a href="/section/@(section.Key)">
+                    <h4>@(section.Value.Title)</h4>
+                    <h5>@(section.Value.Description)</h5>
+                </a>
+            </li>
+        }
+    </ul>
+</section>
